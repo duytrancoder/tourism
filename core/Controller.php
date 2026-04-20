@@ -16,16 +16,25 @@ class Controller {
 
     public function view($view, $data = []) {
         if (file_exists(APP . '/views/' . $view . '.php')) {
+            // Define views that should use the new Tailwind master layout
+            $newViews = [
+                'home/index',
+                'package/details',
+                'package/index',
+                'tour/history',
+                'wishlist/index'
+            ];
+            
             // Extract data to be used in the view
             extract($data);
-            
+
             // Render view into a variable
             ob_start();
             require_once APP . '/views/' . $view . '.php';
             $content = ob_get_clean();
             
-            // Check if master layout exists, otherwise fallback to direct rendering
-            if (file_exists(APP . '/views/layouts/master.php')) {
+            // Check if master layout exists and view is in the list of migrated views
+            if (in_array($view, $newViews) && file_exists(APP . '/views/layouts/master.php')) {
                 require_once APP . '/views/layouts/master.php';
             } else {
                 echo $content;

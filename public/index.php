@@ -8,19 +8,18 @@ define("APP", ROOT . "/app");
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
 $host = $_SERVER['HTTP_HOST'];
 
-// Calculate base path - get the directory containing the project (one level up from public)
-// SCRIPT_NAME will be something like /tour1/public/index.php, we want /tour1
-$scriptPath = $_SERVER['SCRIPT_NAME'];
-$basePath = dirname(dirname($scriptPath));
-
-// Clean up the path
-$basePath = rtrim(str_replace('\\', '/', $basePath), '/');
-
-// Ensure it starts with /
-if ($basePath === '' || $basePath === '.') {
+// Calculate base path
+if (php_sapi_name() === 'cli-server') {
     $basePath = '';
-} elseif ($basePath[0] !== '/') {
-    $basePath = '/' . $basePath;
+} else {
+    $scriptPath = $_SERVER['SCRIPT_NAME'];
+    $basePath = dirname(dirname($scriptPath));
+    $basePath = rtrim(str_replace('\\', '/', $basePath), '/');
+    if ($basePath === '' || $basePath === '.') {
+        $basePath = '';
+    } elseif ($basePath[0] !== '/') {
+        $basePath = '/' . $basePath;
+    }
 }
 
 define("BASE_URL", $protocol . '://' . $host . $basePath . '/');
